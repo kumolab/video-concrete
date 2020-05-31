@@ -1,0 +1,4 @@
+ffmpeg==1.4
+ffmpy==0.2.2
+moviepy==1.0.1
+numpy==1.18.1
