@@ -1,3 +1,6 @@
 .vscode/
 ref/
+pkg/
 vc.log
+*.tar.gz
+*.whl
