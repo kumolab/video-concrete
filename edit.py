@@ -167,6 +167,7 @@ class videoCache(object):
         # tbd: delete cache files
 
     def handle_flv(self, seq_num, episode_num, flow_type):
+        from operator import itemgetter
         filepath = self.generate_source_path(seq_num, episode_num, flow_type)
         stg_log(f"flv focusing on {filepath}")
 
@@ -174,7 +175,20 @@ class videoCache(object):
         useable_video_path = ""
         export_video_path = ""
         file_list = os.listdir(filepath)
-        file_list.sort() # ???
+        file_list_dict = []
+        for every_file in file_list:
+            file_name_split = every_file.split('.')
+            try:
+                epi_num = int(file_name_split[0])
+                file_list_dict.append({"full_name": every_file, "epi_num":epi_num})
+            except Exception as e:
+                stg_log(f"unsupported file name: {every_file}")
+        file_list_sort = sorted(file_list_dict, key=itemgetter('epi_num'))
+        file_list = []
+        for every_file in file_list_sort:
+            file_list.append(every_file["file_name"])
+        stg_log(f"parts: {str(file_list)}")
+        # file_list.sort() # ???
         clip_list = []
         exp_list = []
         for every_file in file_list:
