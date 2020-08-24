@@ -4,7 +4,7 @@ import os
 from os import path
 import re
 
-def stg_log(msg = "test log", level="info", filenanme = "./vc.log", do_print = 1):
+def stg_log(msg = "test log", level="info", filename = "./vc.log", do_print = 1):
     """
     msg: info message to be printed
     level: info or warning or error
@@ -14,7 +14,7 @@ def stg_log(msg = "test log", level="info", filenanme = "./vc.log", do_print = 1
     if (do_print):
         print(std_log_msg)
     std_log_msg += "\n"
-    with open(filenanme, 'a') as fo:
+    with open(filename, 'a') as fo:
         fo.write(std_log_msg)
 
 def check_platform():
@@ -23,7 +23,6 @@ def check_platform():
     """
     import platform
     return platform.system()
-
 
 
 class videoCache(object):
@@ -44,7 +43,7 @@ class videoCache(object):
         filename_split = path_split[-1].split('.')
         return int(filename_split[0])
 
-    def getFileTree(self):
+    def get_file_tree(self):
         from pathlib import PurePath
         local_file_path = os.getcwd()
         pHandle = PurePath(local_file_path)
@@ -77,12 +76,14 @@ class videoCache(object):
             sp_list = os.listdir(self._tree["basic_path"] + self._slash + every_fp["av_number"])
             every_fp["episode_count"] = len(sp_list)
             every_fp["episode_offset"] = int(min(sp_list)) - 1
-            if (int(max(sp_list)) != (every_fp["episode_offset"] + every_fp["episode_count"])):
-                raise ValueError("episode number incorrect")
+            # not suitable to use max(str)
+            # if (int(max(sp_list)) != (every_fp["episode_offset"] + every_fp["episode_count"])):
+            #     raise ValueError("episode number incorrect")
+
         stg_log(self._tree)
         print('sf')
 
-    def apply_handle_num(self):
+    def apply_handle_num(self, number = 1):
         # tbd: read from file
         import json
         with open('settings.json') as fi:
@@ -100,8 +101,8 @@ class videoCache(object):
         return gen_path
 
     def generate_exp_name(self, seq_num, episode_num):
-        temp_av_bumber = self._tree["video_list"][seq_num]["av_number"]
-        export_path = self._tree["basic_path"] + self._slash + f"edited_{temp_av_bumber}" # tbd...
+        temp_av_number = self._tree["video_list"][seq_num]["av_number"]
+        export_path = self._tree["basic_path"] + self._slash + f"edited_{temp_av_number}" # tbd...
 
         self.check_exp_path(export_path)
         # export_path += self._slash + self.read_video_info(seq_num, episode_num)["title"]
@@ -109,8 +110,8 @@ class videoCache(object):
         return export_path
 
     def generate_conf_exp_path(self, seq_num, episode_num):
-        temp_av_bumber = self._tree["video_list"][seq_num]["av_number"]
-        export_path = self._tree["basic_path"] + self._slash + f"edited_{temp_av_bumber}" # tbd...
+        temp_av_number = self._tree["video_list"][seq_num]["av_number"]
+        export_path = self._tree["basic_path"] + self._slash + f"edited_{temp_av_number}" # tbd...
         # export_path += self._slash + self.read_video_info(seq_num, episode_num)["title"]
         export_path += self._slash + "infoFiles"
         return export_path 
@@ -186,7 +187,7 @@ class videoCache(object):
         file_list_sort = sorted(file_list_dict, key=itemgetter('epi_num'))
         file_list = []
         for every_file in file_list_sort:
-            file_list.append(every_file["file_name"])
+            file_list.append(every_file["full_name"])
         stg_log(f"parts: {str(file_list)}")
         # file_list.sort() # ???
         clip_list = []
@@ -243,7 +244,7 @@ class videoCache(object):
         stg_log(f"exp: {default_export_name} done")
         # tbd: delete cache files
 
-
+    # move danmaku and info files
     def move_conf_files(self, seq_num, episode_num):
         import shutil
 
@@ -312,14 +313,34 @@ class videoCache(object):
 
         stg_log(f"all done")
 
-
+def load_args():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-n',
+        '--number',
+        required=False,
+        type=int,
+        help="Number of videos to be converted"
+    )
+    parser.add_argument(
+        '-s',
+        '--sequence',
+        required=False,
+        type=str,
+        help="Put videos in sequence"
+    )
+    return parser
 
 def main():
+    args = load_args().parse_args()
+    # remember to check
+    arg_number = args.number
+
     myvc = videoCache()
-    myvc.getFileTree()
+    myvc.get_file_tree()
 
-    myvc.apply_handle_num()
-
+    myvc.apply_handle_num(arg_number)
 
     myvc.deal_all()
 

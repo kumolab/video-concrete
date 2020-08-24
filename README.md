@@ -34,7 +34,7 @@ me@host:~/Videos$ python edit.py
 
 There is one object that handles all the process: videoCache.
 
-First of all, getFileTree() function catches the video list and episode count of every video.
+First of all, get_file_tree() function catches the video list and episode count of every video.
 
 The apply_handle_num() function limits the amount of videos that we are going to handle.
 
