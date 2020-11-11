@@ -8,11 +8,14 @@ def stg_log(msg = "test log", level="info", filename = "./vc.log", do_print = 1)
     """
     from datetime import datetime
     std_log_msg = f"vc: {datetime.now().isoformat(timespec='seconds')}: [{level}]: {msg}"
-    if (do_print):
-        print(std_log_msg)
-    std_log_msg += "\n"
-    with open(filename, 'a') as fo:
-        fo.write(std_log_msg)
+    try:
+        if (do_print):
+            print(std_log_msg)
+        std_log_msg += "\n"
+        with open(filename, 'a') as fo:
+            fo.write(std_log_msg)
+    except Exception as e:
+        print(e)
 
 def check_platform():
     """
