@@ -24,6 +24,19 @@ def check_platform():
     import platform
     return platform.system()
 
+def liegal_filename(raw_name):
+    new_name = raw_name.replace("/", "")
+    new_name = new_name.replace("\\", "")
+    new_name = new_name.replace("*", "")
+    new_name = new_name.replace("?", "")
+    new_name = new_name.replace("\"", "")
+    new_name = new_name.replace("<", "")
+    new_name = new_name.replace(">", "")
+    new_name = new_name.replace("|", "")
+    # if len(new_name):
+    return new_name
+
+
 class videoExport(object):
 
     def __init__(self):
@@ -74,7 +87,11 @@ class videoExport(object):
                         title = entry_file["title"]
                         create_time = entry_file["time_create_stamp"]
                         update_time = entry_file["time_update_stamp"]
-                        avid = entry_file["avid"]
+                        # avid = entry_file["avid"]
+                        if "avid" in entry_file:
+                            avid = entry_file["avid"]
+                        else:
+                            avid = 0
                         # bvid = entry_file["bvid"]
                         if "bvid" in entry_file:
                             bvid = entry_file["bvid"]
@@ -97,7 +114,8 @@ class videoExport(object):
                         except UnicodeEncodeError as e:
                             print(e)
                             csv_writer.writerow([avid, bvid, owner,
-                                                create_time, update_time])
+                                                create_time, update_time,
+                                                "????", "????"])
         stg_log("export info done")
 
     def search_for_info(self, keyword=""):
@@ -118,6 +136,7 @@ class videoExport(object):
                     with open(info_location + self._slash + every_info, 'rb') as fi:
                         entry_file = json.load(fi)
                         full_description = entry_file["page_data"]["download_subtitle"]
+                        full_description = liegal_filename(full_description)
                     basic_path = str(self._local_path) + self._slash + every_video["exp_dir"]
                     source_file_name = basic_path + self._slash + episode_num + ".mp4"
                     # tbd..
@@ -149,6 +168,7 @@ class videoExport(object):
                     with open(info_location + self._slash + every_info, 'rb') as fi:
                         entry_file = json.load(fi)
                         title = entry_file["title"]
+                        title = liegal_filename(title)
                     # basic_path = str(self._local_path) + self._slash + every_video["exp_dir"]
                     source_folder_name = str(self._local_path) + self._slash + every_video["exp_dir"]
                     # tbd..
