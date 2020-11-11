@@ -43,13 +43,13 @@ class videoExport(object):
         self._fp_list = os.listdir(self._local_path)
         # fp_list_copy = self._fp_list
         # self._fpa_list = []
-        stg_log(self._fp_list)
+        # stg_log(self._fp_list)
         for every_fp in self._fp_list:
             if not (re.fullmatch(r'edited_(s_)?\d{1,12}', every_fp)):
                 continue
             if os.path.isdir(str(self._local_path) + self._slash + every_fp):
                 self._tree["exp_list"].append({"exp_dir": every_fp})
-        stg_log(self._tree)
+        # stg_log(self._tree)
         stg_log("Get file tree done")
 
     def export_info(self, exp_file = "infoList.csv"):
@@ -151,12 +151,32 @@ class videoExport(object):
     def move_video(self):
         pass
 
+def load_args():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-a',
+        '--action',
+        required=True,
+        type=str,
+        help="What to do next?"
+    )
+    return parser
+
 def main():
     myHandle = videoExport()
     myHandle.get_file_tree()
-    # myHandle.export_info()
-    # myHandle.rename_video()
-    myHandle.rename_folder()
+
+    args = load_args().parse_args()
+    the_action = args.action.replace(" ", '')
+    if the_action == "expinfo":
+        myHandle.export_info()
+    elif the_action == "revideo":
+        myHandle.rename_video()
+    elif the_action == "refold":
+        myHandle.rename_folder()
+    else:
+        print("what do you want?")
 
 if __name__ == "__main__":
     main()
