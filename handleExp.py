@@ -33,6 +33,8 @@ def liegal_filename(raw_name):
     new_name = new_name.replace("<", "")
     new_name = new_name.replace(">", "")
     new_name = new_name.replace("|", "")
+    new_name = new_name.replace(".", "")
+    new_name = new_name.replace("_", "")
     # if len(new_name):
     return new_name
 
