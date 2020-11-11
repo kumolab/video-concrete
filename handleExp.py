@@ -56,7 +56,7 @@ class videoExport(object):
         import json, csv
         export_csv_file = str(self._local_path) + self._slash + exp_file
         for every_video in self._tree["exp_list"]:
-            stg_log(f"handling: {every_video}")
+            stg_log(f"export info: {every_video}")
             info_location = str(self._local_path) + self._slash + every_video["exp_dir"] + self._slash + "infoFiles"
             raw_info_list = os.listdir(info_location)
             useable_info_list = []
@@ -88,12 +88,65 @@ class videoExport(object):
                                             title, full_description])
         stg_log("export info done")
 
-    # keep sequence
-    def rename_video(self):
+    def search_for_info(self, keyword=""):
         pass
 
+    # keep sequence
+    def rename_video(self):
+        import json
+        for every_video in self._tree["exp_list"]:
+            stg_log(f"rename video: {every_video}")
+            info_location = str(self._local_path) + self._slash + every_video["exp_dir"] + self._slash + "infoFiles"
+            raw_info_list = os.listdir(info_location)
+            for every_info in raw_info_list:
+                # episode number is shorter than 5 characters
+                if re.fullmatch(r'entry.\d{1,5}.json', every_info):
+                    file_name_split = every_info.split('.')
+                    episode_num = file_name_split[1]
+                    with open(info_location + self._slash + every_info, 'rb') as fi:
+                        entry_file = json.load(fi)
+                        full_description = entry_file["page_data"]["download_subtitle"]
+                    basic_path = str(self._local_path) + self._slash + every_video["exp_dir"]
+                    source_file_name = basic_path + self._slash + episode_num + ".mp4"
+                    # tbd..
+                    rename_file_name = basic_path + self._slash + full_description + ".mp4"
+                    # Check if video file for every episode exists
+                    stg_log(f"{source_file_name} will be renamed with {rename_file_name}")
+                    if os.path.exists(source_file_name):
+                        # What if the description contains a char that cannot be used in filename?
+                        os.rename(source_file_name, rename_file_name)
+                        stg_log("rename succeed")
+                    else:
+                        stg_log("entry.json does not mark a video", "warning")
+        stg_log("rename video done")
+
     def rename_folder(self):
-        pass
+        import json
+        for every_video in self._tree["exp_list"]:
+            stg_log(f"rename video: {every_video}")
+            info_location = str(self._local_path) + self._slash + every_video["exp_dir"] + self._slash + "infoFiles"
+            raw_info_list = os.listdir(info_location)
+            for every_info in raw_info_list:
+                # episode number is shorter than 5 characters
+                if re.fullmatch(r'entry.\d{1,5}.json', every_info):
+                    # file_name_split = every_info.split('.')
+                    # episode_num = file_name_split[1]
+                    with open(info_location + self._slash + every_info, 'rb') as fi:
+                        entry_file = json.load(fi)
+                        title = entry_file["title"]
+                    # basic_path = str(self._local_path) + self._slash + every_video["exp_dir"]
+                    source_folder_name = str(self._local_path) + self._slash + every_video["exp_dir"]
+                    # tbd..
+                    rename_folder_name = str(self._local_path) + self._slash + title
+                    # Check if video file for every episode exists
+                    stg_log(f"{source_folder_name} will be renamed with {rename_folder_name}")
+                    if os.path.exists(source_folder_name):
+                        os.rename(source_folder_name, rename_folder_name)
+                        stg_log("rename succeed")
+                    else:
+                        stg_log("entry.json does not mark a video", "warning")
+                    break
+        stg_log("rename folder done")
 
     def move_video(self):
         pass
@@ -101,7 +154,9 @@ class videoExport(object):
 def main():
     myHandle = videoExport()
     myHandle.get_file_tree()
-    myHandle.export_info()
+    # myHandle.export_info()
+    # myHandle.rename_video()
+    myHandle.rename_folder()
 
 if __name__ == "__main__":
     main()
