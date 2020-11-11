@@ -14,7 +14,7 @@ def stg_log(msg = "test log", level="info", filename = "./vc.log", do_print = 1)
         std_log_msg += "\n"
         with open(filename, 'a') as fo:
             fo.write(std_log_msg)
-    except Exception as e:
+    except UnicodeEncodeError as e:
         print(e)
 
 def check_platform():
@@ -90,9 +90,14 @@ class videoExport(object):
                             f"owner: {owner}, full_description: {full_description}")
                     with open(export_csv_file, "a", newline='') as fo:
                         csv_writer = csv.writer(fo,delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                        csv_writer.writerow([avid, bvid, owner,
-                                            create_time, update_time,
-                                            title, full_description])
+                        try:
+                            csv_writer.writerow([avid, bvid, owner,
+                                                create_time, update_time,
+                                                title, full_description])
+                        except UnicodeEncodeError as e:
+                            print(e)
+                            csv_writer.writerow([avid, bvid, owner,
+                                                create_time, update_time])
         stg_log("export info done")
 
     def search_for_info(self, keyword=""):
@@ -121,8 +126,11 @@ class videoExport(object):
                     stg_log(f"{source_file_name} will be renamed with {rename_file_name}")
                     if os.path.exists(source_file_name):
                         # What if the description contains a char that cannot be used in filename?
-                        os.rename(source_file_name, rename_file_name)
-                        stg_log("rename succeed")
+                        try:
+                            os.rename(source_file_name, rename_file_name)
+                            stg_log("rename succeed")
+                        except UnicodeEncodeError as e:
+                            print(e)
                     else:
                         stg_log("entry.json does not mark a video", "warning")
         stg_log("rename video done")
@@ -148,8 +156,11 @@ class videoExport(object):
                     # Check if video file for every episode exists
                     stg_log(f"{source_folder_name} will be renamed with {rename_folder_name}")
                     if os.path.exists(source_folder_name):
-                        os.rename(source_folder_name, rename_folder_name)
-                        stg_log("rename succeed")
+                        try:
+                            os.rename(source_folder_name, rename_folder_name)
+                            stg_log("rename succeed")
+                        except UnicodeEncodeError as e:
+                            print(e)
                     else:
                         stg_log("entry.json does not mark a video", "warning")
                     break
