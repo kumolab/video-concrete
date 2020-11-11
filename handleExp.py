@@ -72,7 +72,11 @@ class videoExport(object):
                         create_time = entry_file["time_create_stamp"]
                         update_time = entry_file["time_update_stamp"]
                         avid = entry_file["avid"]
-                        bvid = entry_file["bvid"]
+                        # bvid = entry_file["bvid"]
+                        if "bvid" in entry_file:
+                            bvid = entry_file["bvid"]
+                        else:
+                            bvid = "0"
                         if "owner_id" in entry_file:
                             owner = entry_file["owner_id"]
                         else:
