@@ -8,6 +8,8 @@ Only sprcified APP supported. Please view the list to check.
   
 ## How to Use?
 
+### For video edit:
+
 **Step1**: Download it behind your caches
 ```
 me@host:~/Videos$ git clone https://github.com/Kumo-YZX/video-concrete.git
@@ -28,6 +30,23 @@ me@host:~/Videos$ pip install -r requirements.txt
 **Step3**: Run it
 ```
 me@host:~/Videos$ python edit.py
+```
+
+### To export video info:
+
+Export info as csv:
+```
+me@host:~/Videos$ python handleExp.py -a expinfo
+```
+
+Rename video:
+```
+me@host:~/Videos$ python handleExp.py -a revideo
+```
+
+Rename folder:
+```
+me@host:~/Videos$ python handleExp.py -a refold
 ```
 
 ## Guide for Development
