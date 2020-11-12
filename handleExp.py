@@ -1,4 +1,5 @@
-# 
+# Yet another CLI tool to export video info, replace file and folder name...
+# Lol
 import os, re
 
 def stg_log(msg = "test log", level="info", filename = "./vc.log", do_print = 1):
@@ -24,12 +25,12 @@ def check_platform():
     import platform
     return platform.system()
 
+# Replace illegal character for filename
 def liegal_filename(raw_name):
     illegal_chars = "\\/*?\"<>|.:"
     for every_char in illegal_chars:
         raw_name = raw_name.replace(every_char, "_")
     return raw_name
-
 
 class videoExport(object):
 
@@ -49,17 +50,15 @@ class videoExport(object):
         # Current path
         self._local_path = pHandle.parents[0]
         self._tree["basic_path"] = str(self._local_path)
-        # list all dirs
+        # List all dirs
         self._fp_list = os.listdir(self._local_path)
-        # fp_list_copy = self._fp_list
-        # self._fpa_list = []
-        # stg_log(self._fp_list)
         for every_fp in self._fp_list:
+            # Folder that looks like a export
             if not (re.fullmatch(r'edited_(s_)?\d{1,12}', every_fp)):
                 continue
             if os.path.isdir(str(self._local_path) + self._slash + every_fp):
+                # Add to tbd list
                 self._tree["exp_list"].append({"exp_dir": every_fp})
-        # stg_log(self._tree)
         stg_log("Get file tree done")
 
     def export_info(self, exp_file = "infoList.csv"):
@@ -71,22 +70,19 @@ class videoExport(object):
             raw_info_list = os.listdir(info_location)
             useable_info_list = []
             for every_info in raw_info_list:
-                # episode number is shorter than 5 characters
+                # Episode number is shorter than 5 characters
                 if re.fullmatch(r'entry.\d{1,5}.json', every_info):
                     useable_info_list.append(every_info)
+                    # Read info from entry.json
                     with open(info_location + self._slash + every_info, 'rb') as fi:
-                        # file_reads = fi.read()
-                        # print(file_reads)
                         entry_file = json.load(fi)
                         title = entry_file["title"]
                         create_time = entry_file["time_create_stamp"]
                         update_time = entry_file["time_update_stamp"]
-                        # avid = entry_file["avid"]
                         if "avid" in entry_file:
                             avid = entry_file["avid"]
                         else:
                             avid = 0
-                        # bvid = entry_file["bvid"]
                         if "bvid" in entry_file:
                             bvid = entry_file["bvid"]
                         else:
@@ -115,7 +111,7 @@ class videoExport(object):
     def search_for_info(self, keyword=""):
         pass
 
-    # keep sequence
+    # Rename video with "Full description"
     def rename_video(self):
         import json
         for every_video in self._tree["exp_list"]:
@@ -123,7 +119,7 @@ class videoExport(object):
             info_location = str(self._local_path) + self._slash + every_video["exp_dir"] + self._slash + "infoFiles"
             raw_info_list = os.listdir(info_location)
             for every_info in raw_info_list:
-                # episode number is shorter than 5 characters
+                # Episode number is shorter than 5 characters
                 if re.fullmatch(r'entry.\d{1,5}.json', every_info):
                     file_name_split = every_info.split('.')
                     episode_num = file_name_split[1]
@@ -132,8 +128,8 @@ class videoExport(object):
                         full_description = entry_file["page_data"]["download_subtitle"]
                         full_description = liegal_filename(full_description)
                     basic_path = str(self._local_path) + self._slash + every_video["exp_dir"]
+                    # source_file_name --rename-> rename_file_name
                     source_file_name = basic_path + self._slash + episode_num + ".mp4"
-                    # tbd..
                     rename_file_name = basic_path + self._slash + full_description + ".mp4"
                     # Check if video file for every episode exists
                     stg_log(f"{source_file_name} will be renamed with {rename_file_name}")
@@ -155,17 +151,13 @@ class videoExport(object):
             info_location = str(self._local_path) + self._slash + every_video["exp_dir"] + self._slash + "infoFiles"
             raw_info_list = os.listdir(info_location)
             for every_info in raw_info_list:
-                # episode number is shorter than 5 characters
+                # Episode number is shorter than 5 characters
                 if re.fullmatch(r'entry.\d{1,5}.json', every_info):
-                    # file_name_split = every_info.split('.')
-                    # episode_num = file_name_split[1]
                     with open(info_location + self._slash + every_info, 'rb') as fi:
                         entry_file = json.load(fi)
                         title = entry_file["title"]
                         title = liegal_filename(title)
-                    # basic_path = str(self._local_path) + self._slash + every_video["exp_dir"]
                     source_folder_name = str(self._local_path) + self._slash + every_video["exp_dir"]
-                    # tbd..
                     rename_folder_name = str(self._local_path) + self._slash + title
                     # Check if video file for every episode exists
                     stg_log(f"{source_folder_name} will be renamed with {rename_folder_name}")
