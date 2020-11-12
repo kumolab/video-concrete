@@ -25,18 +25,10 @@ def check_platform():
     return platform.system()
 
 def liegal_filename(raw_name):
-    new_name = raw_name.replace("/", "")
-    new_name = new_name.replace("\\", "")
-    new_name = new_name.replace("*", "")
-    new_name = new_name.replace("?", "")
-    new_name = new_name.replace("\"", "")
-    new_name = new_name.replace("<", "")
-    new_name = new_name.replace(">", "")
-    new_name = new_name.replace("|", "")
-    new_name = new_name.replace(".", "")
-    new_name = new_name.replace("_", "")
-    # if len(new_name):
-    return new_name
+    illegal_chars = "\\/*?\"<>|.:"
+    for every_char in illegal_chars:
+        raw_name = raw_name.replace(every_char, "_")
+    return raw_name
 
 
 class videoExport(object):
